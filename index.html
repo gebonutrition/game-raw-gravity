@@ -28,6 +28,7 @@
     button { font: inherit; }
     .site { width: min(100%, 430px); min-height: 100vh; margin: 0 auto; background: var(--paper); overflow: hidden; }
     .game { height: 100svh; min-height: 560px; position: relative; overflow: hidden; background: var(--paper); isolation: isolate; touch-action: manipulation; }
+    .game.is-won .ticker, .game.is-won .score, .game.is-won #mushrooms, .game.is-won .float-score, .game.is-won .confetti { visibility: hidden; }
     .game::before, .game::after { content: ""; position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #aaa6a1; opacity: .65; pointer-events: none; }
     .game::before { top: 24%; left: 17%; box-shadow: 90px 80px #bdb9b3, 245px -115px #aaa6a1, 300px 185px #bdb9b3, 190px 330px #aaa6a1, -30px 380px #bdb9b3; }
     .game::after { top: 62%; left: 24%; box-shadow: 180px -230px #bdb9b3, 260px 120px #aaa6a1, 65px 210px #bdb9b3, 280px -30px #bdb9b3; }
@@ -164,7 +165,7 @@
         if(score>=goal) finish();
       }
       function finish() {
-        if(done) return; done=true; clearInterval(spawnTimer);
+        if(done) return; done=true; game.classList.add('is-won'); clearInterval(spawnTimer);
         mushrooms.forEach(m=>{m.el.style.transition='transform .7s ease, opacity .7s ease';m.el.style.opacity='0';m.el.style.transform='translate(-50%,-50%) scale(.2)';});
         for(let i=0;i<34;i++){const c=document.createElement('i');c.className='confetti';c.style.background=['#ff8a00','#ffd34d','#73d8f3','#9ade9e','#f18dc7','#a879e4'][i%6];c.style.setProperty('--x',`${rand(-190,190)}px`);c.style.setProperty('--y',`${rand(-260,260)}px`);c.style.animationDelay=`${rand(0,.4)}s`;game.appendChild(c);setTimeout(()=>c.remove(),1900);}
         setTimeout(()=>{win.classList.add('is-visible');win.setAttribute('aria-hidden','false');},450);
@@ -175,7 +176,7 @@
         if(!done)raf=requestAnimationFrame(tick);
       }
       function reset() {
-        done=false; score=0; scoreEl.textContent='0';win.classList.remove('is-visible');win.setAttribute('aria-hidden','true');stage.replaceChildren();game.querySelectorAll('.confetti,.float-score').forEach(el=>el.remove());mushrooms=[];for(let i=0;i<6;i++)setTimeout(spawn,i*180);clearInterval(spawnTimer);spawnTimer=setInterval(spawn,650);tick.last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);
+        done=false; score=0; scoreEl.textContent='0';game.classList.remove('is-won');win.classList.remove('is-visible');win.setAttribute('aria-hidden','true');stage.replaceChildren();game.querySelectorAll('.confetti,.float-score').forEach(el=>el.remove());mushrooms=[];for(let i=0;i<6;i++)setTimeout(spawn,i*180);clearInterval(spawnTimer);spawnTimer=setInterval(spawn,650);tick.last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);
       }
       document.getElementById('play-again').addEventListener('click',reset);
       win.querySelector('a.buy').addEventListener('click',()=>win.classList.remove('is-visible'));
