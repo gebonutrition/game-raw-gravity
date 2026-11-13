@@ -195,7 +195,6 @@
         done=false; score=0; scoreEl.textContent='0';game.classList.remove('is-won');win.classList.remove('is-visible');win.setAttribute('aria-hidden','true');stage.replaceChildren();game.querySelectorAll('.confetti,.float-score').forEach(el=>el.remove());mushrooms=[];for(let i=0;i<6;i++)setTimeout(spawn,i*180);clearInterval(spawnTimer);spawnTimer=setInterval(spawn,650);tick.last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);
       }
       document.getElementById('play-again').addEventListener('click',reset);
-      win.querySelector('a.buy').addEventListener('click',()=>win.classList.remove('is-visible'));
       reset();
     })();
   </script>
