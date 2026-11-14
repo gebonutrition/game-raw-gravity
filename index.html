@@ -28,13 +28,13 @@
     button { font: inherit; }
     .site { width: min(100%, 430px); min-height: 100vh; margin: 0 auto; background: var(--paper); overflow: hidden; }
     .game { height: 100svh; min-height: 560px; position: relative; overflow: hidden; background: var(--paper); isolation: isolate; touch-action: manipulation; }
-    .game.is-won .ticker, .game.is-won .score, .game.is-won .float-score { visibility: hidden; }
+    .game.is-won .float-score { visibility: hidden; }
     .game.is-won #mushrooms { opacity: 0; pointer-events: none; transition: opacity .7s ease; }
-    .game::before, .game::after { content: ""; position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #aaa6a1; opacity: .65; pointer-events: none; }
-    .game::before { top: 24%; left: 17%; box-shadow: 90px 80px #bdb9b3, 245px -115px #aaa6a1, 300px 185px #bdb9b3, 190px 330px #aaa6a1, -30px 380px #bdb9b3; }
-    .game::after { top: 62%; left: 24%; box-shadow: 180px -230px #bdb9b3, 260px 120px #aaa6a1, 65px 210px #bdb9b3, 280px -30px #bdb9b3; }
+    .speckles { position: absolute; z-index: 1; inset: 0; overflow: hidden; pointer-events: none; }
+    .speck { position: absolute; display: block; width: var(--size); height: var(--size); border-radius: 50%; background: #aaa6a1; opacity: var(--opacity); will-change: transform; animation: speck-drift var(--duration) ease-in-out var(--delay) infinite alternate; }
+    @keyframes speck-drift { to { transform: translate3d(var(--dx),var(--dy),0); } }
     .ticker { position: absolute; z-index: 5; top: calc(env(safe-area-inset-top, 0px) + 14px); left: 0; width: 100%; overflow: hidden; background: #f5a11a; padding: 6px 0; white-space: nowrap; pointer-events: none; }
-    .ticker__track { display: flex; width: max-content; animation: marquee 12s linear infinite; }
+    .ticker__track { display: flex; width: max-content; animation: marquee 6s linear infinite; }
     .ticker__track span { flex: none; padding-right: 20px; font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
     @keyframes marquee { to { transform: translateX(-50%); } }
     @keyframes score-blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .25; transform: scale(1.08); } }
@@ -68,6 +68,9 @@
     .cup { width: min(300px,36vh); height: auto; overflow: visible; transform: translateY(36px) scale(.6); opacity: 0; transition: transform .7s cubic-bezier(.34,1.4,.64,1) .3s, opacity .4s ease .3s; }
     .win__content > .buy { margin-top: 3vh; transform: translateY(110px) scale(.35); opacity: 0; transition: transform .7s cubic-bezier(.34,1.5,.64,1) .7s, opacity .4s ease .7s; }
     .win__content > .play-again { margin-top: 2.5vh; opacity: 0; transition: opacity .6s ease 1.6s; }
+    .win__content > .win__scroll { display: grid; place-items: center; width: 34px; height: 34px; margin-top: 1.25vh; color: #9b9996; opacity: 0; transform: translateY(-5px); transition: opacity .4s ease 1.9s, transform .4s ease 1.9s; }
+    .win__scroll svg { width: 100%; height: 100%; }
+    .win.is-visible .win__content > .win__scroll { opacity: .8; transform: none; }
     .buy { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 58px; padding: 0 29px; border: 0; border-radius: 999px; color: var(--paper); background: var(--ink); text-decoration: none; font-size: 15px; font-weight: 800; box-shadow: 0 5px 0 rgba(43,36,48,.12); transition: transform .16s, filter .16s; }
     .buy span { color: #ffae00; }
     .buy:hover { filter: brightness(1.2); transform: translateY(-2px); }
@@ -101,6 +104,7 @@
   <main class="site">
     <section class="game" id="game" aria-label="Tap mushrooms to unlock a discount">
       <div class="ticker"><div class="ticker__track"><span>Official collaboration ✦ Raw Gravity × Take My Muffin ✦ </span><span aria-hidden="true">Official collaboration ✦ Raw Gravity × Take My Muffin ✦ </span></div></div>
+      <div class="speckles" id="speckles" aria-hidden="true"></div>
       <div class="score" aria-live="polite"><span class="score__number"><b id="score">0</b><span>%</span></span><span class="score__off">OFF</span></div>
       <div id="mushrooms" aria-label="Mushrooms"></div>
       <div class="win" id="win" aria-hidden="true">
@@ -126,6 +130,7 @@
           </svg>
           <a class="buy" href="https://www.amazon.com/dp/B0GTWJ3K1R?maas=maas_adg_CC2415B136B0A8470459C6FC79200F65_afap_abs&amp;ref_=aa_maas&amp;tag=maas" target="_blank" rel="noopener noreferrer">Buy on Amazon <span>−25%</span></a>
           <button class="play-again" type="button" id="play-again">play again</button>
+          <a class="win__scroll" href="#product" aria-label="Scroll to product details"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v17m-7-7 7 7 7-7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </div>
       </div>
     </section>
@@ -206,6 +211,20 @@
         done=false; score=0; scoreEl.textContent='0';scoreEl.classList.remove('score--celebrating');game.classList.remove('is-won');win.classList.remove('is-visible');win.setAttribute('aria-hidden','true');stage.replaceChildren();game.querySelectorAll('.confetti,.float-score').forEach(el=>el.remove());mushrooms=[];for(let i=0;i<6;i++)setTimeout(spawn,i*180);clearInterval(spawnTimer);spawnTimer=setInterval(spawn,650);tick.last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);
       }
       document.getElementById('play-again').addEventListener('click',reset);
+      const speckles = document.getElementById("speckles");
+      for (let i = 0; i < 28; i++) {
+        const speck = document.createElement("i");
+        speck.className = "speck";
+        speck.style.left = `${Math.random() * 100}%`;
+        speck.style.top = `${Math.random() * 100}%`;
+        speck.style.setProperty("--size", `${2 + Math.random() * 3}px`);
+        speck.style.setProperty("--opacity", (0.22 + Math.random() * 0.4).toFixed(2));
+        speck.style.setProperty("--dx", `${(Math.random() - 0.5) * 42}px`);
+        speck.style.setProperty("--dy", `${(Math.random() - 0.5) * 48}px`);
+        speck.style.setProperty("--duration", `${5 + Math.random() * 7}s`);
+        speck.style.setProperty("--delay", `${-Math.random() * 12}s`);
+        speckles.appendChild(speck);
+      }
       reset();
     })();
   </script>
