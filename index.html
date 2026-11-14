@@ -37,6 +37,8 @@
     .ticker__track { display: flex; width: max-content; animation: marquee 12s linear infinite; }
     .ticker__track span { flex: none; padding-right: 20px; font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
     @keyframes marquee { to { transform: translateX(-50%); } }
+    @keyframes score-blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .25; transform: scale(1.08); } }
+    .score--celebrating { transform-origin: center; animation: score-blink .4s ease-in-out 5; }
     .score { position: absolute; z-index: 4; top: calc(env(safe-area-inset-top, 0px) + 68px); left: 0; right: 0; display: flex; align-items: baseline; justify-content: center; gap: .16em; color: var(--ink); font-size: clamp(48px, 14vw, 62px); font-weight: 800; line-height: .98; letter-spacing: -.075em; }
     .score__number { display: inline-flex; align-items: baseline; }
     .score__number span { color: var(--orange); letter-spacing: -.06em; }
@@ -185,10 +187,13 @@
         if(score>=goal) finish();
       }
       function finish() {
-        if(done) return; done=true; game.classList.add('is-won'); clearInterval(spawnTimer);
-        mushrooms.forEach(m=>{m.el.style.transition='transform .7s ease, opacity .7s ease';m.el.style.opacity='0';m.el.style.transform='translate(-50%,-50%) scale(.2)';});
-        for(let i=0;i<34;i++){const c=document.createElement('i');c.className='confetti';c.style.background=['#ff8a00','#ffd34d','#73d8f3','#9ade9e','#f18dc7','#a879e4'][i%6];c.style.setProperty('--x',`${rand(-190,190)}px`);c.style.setProperty('--y',`${rand(-260,260)}px`);c.style.animationDelay=`${rand(0,.4)}s`;game.appendChild(c);setTimeout(()=>c.remove(),1900);}
-        win.classList.add('is-visible');win.setAttribute('aria-hidden','false');
+        if(done) return; done=true; clearInterval(spawnTimer); scoreEl.classList.add('score--celebrating');
+        setTimeout(()=>{
+          scoreEl.classList.remove('score--celebrating'); game.classList.add('is-won');
+          mushrooms.forEach(m=>{m.el.style.transition='transform .7s ease, opacity .7s ease';m.el.style.opacity='0';m.el.style.transform='translate(-50%,-50%) scale(.2)';});
+          for(let i=0;i<34;i++){const c=document.createElement('i');c.className='confetti';c.style.background=['#ff8a00','#ffd34d','#73d8f3','#9ade9e','#f18dc7','#a879e4'][i%6];c.style.setProperty('--x',`${rand(-190,190)}px`);c.style.setProperty('--y',`${rand(-260,260)}px`);c.style.animationDelay=`${rand(0,.4)}s`;game.appendChild(c);setTimeout(()=>c.remove(),1900);}
+          win.classList.add('is-visible');win.setAttribute('aria-hidden','false');
+        },2000);
       }
       function tick(t) {
         const dt=Math.min(.05,(t-(tick.last||t))/1000); tick.last=t; const w=game.clientWidth,h=game.clientHeight;
@@ -196,7 +201,7 @@
         if(!done)raf=requestAnimationFrame(tick);
       }
       function reset() {
-        done=false; score=0; scoreEl.textContent='0';game.classList.remove('is-won');win.classList.remove('is-visible');win.setAttribute('aria-hidden','true');stage.replaceChildren();game.querySelectorAll('.confetti,.float-score').forEach(el=>el.remove());mushrooms=[];for(let i=0;i<6;i++)setTimeout(spawn,i*180);clearInterval(spawnTimer);spawnTimer=setInterval(spawn,650);tick.last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);
+        done=false; score=0; scoreEl.textContent='0';scoreEl.classList.remove('score--celebrating');game.classList.remove('is-won');win.classList.remove('is-visible');win.setAttribute('aria-hidden','true');stage.replaceChildren();game.querySelectorAll('.confetti,.float-score').forEach(el=>el.remove());mushrooms=[];for(let i=0;i<6;i++)setTimeout(spawn,i*180);clearInterval(spawnTimer);spawnTimer=setInterval(spawn,650);tick.last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);
       }
       document.getElementById('play-again').addEventListener('click',reset);
       reset();
