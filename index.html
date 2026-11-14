@@ -57,7 +57,7 @@
     @keyframes pop { to { opacity: 0; scale: 1.4 .55; } }
     .float-score { position: absolute; z-index: 6; font-size: 24px; font-weight: 800; color: var(--orange); -webkit-text-stroke: 1px var(--ink); paint-order: stroke fill; pointer-events: none; animation: float-up .85s ease-out forwards; }
     @keyframes float-up { to { transform: translateY(-75px) scale(1.2); opacity: 0; } }
-    .win { position: absolute; z-index: 8; inset: 0; display: grid; place-items: center; padding: 90px 24px 35px; background: transparent; opacity: 1; visibility: hidden; transition: visibility 0s; }
+    .win { position: absolute; z-index: 8; inset: 0; display: grid; place-items: center; padding: calc(env(safe-area-inset-top, 0px) + 150px) 24px 35px; background: transparent; opacity: 1; visibility: hidden; transition: visibility 0s; }
     .win.is-visible { opacity: 1; visibility: visible; }
     .win__content { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0; transform: none; transition: none; }
     .win.is-visible .win__content { transform: none; }
@@ -94,7 +94,7 @@
     .footer small { font-family: system-ui,Arial,sans-serif; font-size: 12px; }
     .confetti { position: absolute; z-index: 7; top: 44%; left: 50%; width: 10px; height: 10px; border-radius: 2px; pointer-events: none; animation: confetti 1.4s ease-out forwards; }
     @keyframes confetti { to { transform: translate(var(--x),var(--y)) rotate(540deg); opacity: 0; } }
-    @media (max-height: 650px) { .score { top: calc(env(safe-area-inset-top, 0px) + 58px); font-size: 48px; } .product { padding-top: 80px; } .pouch { height: 250px; } .win { padding-top: 68px; } .cup { width: 175px; height: 168px; } }
+    @media (max-height: 650px) { .score { top: calc(env(safe-area-inset-top, 0px) + 58px); font-size: 48px; } .product { padding-top: 80px; } .pouch { height: 250px; } .win { padding-top: calc(env(safe-area-inset-top, 0px) + 118px); } .cup { width: 175px; height: 168px; } }
     @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
   </style>
   <script src="/pixel.js" defer></script>
