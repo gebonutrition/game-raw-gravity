@@ -54,14 +54,17 @@
     @keyframes pop { to { opacity: 0; scale: 1.4 .55; } }
     .float-score { position: absolute; z-index: 6; font-size: 24px; font-weight: 800; color: var(--orange); -webkit-text-stroke: 1px var(--ink); paint-order: stroke fill; pointer-events: none; animation: float-up .85s ease-out forwards; }
     @keyframes float-up { to { transform: translateY(-75px) scale(1.2); opacity: 0; } }
-    .win { position: absolute; z-index: 8; inset: 0; display: grid; place-items: center; padding: 90px 24px 35px; background: rgba(236,233,227,.98); opacity: 0; visibility: hidden; transition: opacity .45s ease, visibility .45s; }
+    .win { position: absolute; z-index: 8; inset: 0; display: grid; place-items: center; padding: 90px 24px 35px; background: rgba(236,233,227,.98); opacity: 1; visibility: hidden; transition: visibility 0s; }
     .win.is-visible { opacity: 1; visibility: visible; }
-    .win__content { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0; transform: translateY(18px) scale(.94); transition: transform .6s cubic-bezier(.2,1.35,.4,1); }
+    .win__content { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0; transform: none; transition: none; }
     .win.is-visible .win__content { transform: none; }
-    .win__brand { width: min(250px,64vw); height: auto; margin-bottom: 2vh; }
-    .cup { width: min(300px,36vh); height: auto; overflow: visible; }
-    .win__content > .buy { margin-top: 3vh; }
-    .win__content > .play-again { margin-top: 2.5vh; }
+    .win.is-visible .win__brand, .win.is-visible .cup { transform: none; opacity: 1; }
+    .win.is-visible .win__content > .buy { transform: none; opacity: 1; }
+    .win.is-visible .win__content > .play-again { opacity: 1; }
+    .win__brand { width: min(250px,64vw); height: auto; margin-bottom: 2vh; transform: translateY(36px) scale(.6); opacity: 0; transition: transform .45s cubic-bezier(.34,1.4,.64,1) 1.3s, opacity .25s ease 1.3s; }
+    .cup { width: min(300px,36vh); height: auto; overflow: visible; transform: translateY(36px) scale(.6); opacity: 0; transition: transform .7s cubic-bezier(.34,1.4,.64,1) .3s, opacity .4s ease .3s; }
+    .win__content > .buy { margin-top: 3vh; transform: translateY(110px) scale(.35); opacity: 0; transition: transform .7s cubic-bezier(.34,1.5,.64,1) .7s, opacity .4s ease .7s; }
+    .win__content > .play-again { margin-top: 2.5vh; opacity: 0; transition: opacity .6s ease 1.6s; }
     .buy { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 58px; padding: 0 29px; border: 0; border-radius: 999px; color: var(--paper); background: var(--ink); text-decoration: none; font-size: 15px; font-weight: 800; box-shadow: 0 5px 0 rgba(43,36,48,.12); transition: transform .16s, filter .16s; }
     .buy span { color: #ffae00; }
     .buy:hover { filter: brightness(1.2); transform: translateY(-2px); }
